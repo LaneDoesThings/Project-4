@@ -1,3 +1,19 @@
+/*
+CS445/545 Prog 4 for Lane Wright
+
+The fish are updated using the keyboard and the keyboard_CB function to update
+thier global position with 'h', 'j', 'u', and 'n' respectively. The fan is
+animated by incrementing the global rotation angle in timer_CB and uses ambient
+lighting. The timer is drawn using a bitmap font and decremented in the timer_CB
+function.
+
+The display_CB function is used to draw the fish, fan, and tank as well as to
+upadte the display.
+
+The events that are used are a display event, timer event, and keyboard event
+with their respective callbacks mentioned above.
+*/
+
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include "OpenGL445Setup-aug24.h"
@@ -43,6 +59,8 @@ int countdown = 30;
 bool stop = false;
 int angle = 0;
 
+// Function that uses a bitmap font to draw the countdown in the upper left
+// corner
 void drawTime() {
   glColor3f(1.0f, 1.0f, 1.0f);
   glRasterPos2i(275, 190);
@@ -50,6 +68,8 @@ void drawTime() {
                    (const unsigned char *)std::to_string(countdown).c_str());
 }
 
+// Draws the fish passed to it with the given color and gives it a yellow tail
+// if tail is true
 void drawFish(Fish &fish, Color color, bool tail) {
   glPushMatrix();
   glColor3ub(color.r, color.g, color.b);
@@ -74,6 +94,7 @@ void drawFish(Fish &fish, Color color, bool tail) {
   }
 }
 
+// Draws the blades of the fan as well as rotates them based on angle
 void drawFan() {
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
@@ -110,6 +131,8 @@ void drawFan() {
   glPopMatrix();
 }
 
+// Callback for display event that calls the functions that will draw all the
+// objects in the scene
 void display_CB() {
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
@@ -123,11 +146,15 @@ void display_CB() {
   glutSwapBuffers();
 }
 
+// Callback for timer event that handles the framerate the countdown timer and
+// the timer for rotating the fans
 void timer_CB(int id) {
+  // Framerate
   if (id == 0) {
     glutTimerFunc(1000 / framerate, timer_CB, 0);
     glutPostRedisplay();
   }
+  // Countdown
   if (id == 1) {
     if (countdown == 0) {
       stop = true;
@@ -136,6 +163,7 @@ void timer_CB(int id) {
     countdown--;
     glutTimerFunc(1000, timer_CB, 1);
   }
+  // Rotation of fans
   if (id == 2) {
     if (!stop) {
       angle = (angle + 10) % 360;
@@ -144,6 +172,8 @@ void timer_CB(int id) {
   }
 }
 
+// Checks if a collision will happen in the given direction and returns the
+// result
 bool collide(Direction dir) {
   switch (dir) {
   case UP:
@@ -167,10 +197,12 @@ bool collide(Direction dir) {
            (fish1.y + fish1.height + 15.0 > fish2.y - fish2.height) &&
            (fish1.y - fish1.height < fish2.y + fish2.height + 15.0);
   default:
-    return NULL;
+    return NULL; // If no direction was given return null to crash because
+                 // something went very wrong
   }
 }
 
+// Callback for keyboard event that handles moving the fish
 void keyboard_CB(unsigned char key, int x, int y) {
   if (!stop) {
     if (key == 'h') {
@@ -196,6 +228,7 @@ int main(int argc, char *argv[]) {
   gluLookAt(200.0, 0.0, 500.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
   glGenLists(1);
 
+  // Lighting setup
   float lightpos[3] = {0.0, 0.0, 0.0};
   float lightcolor[4] = {0.5, 0.0, 0.0, 1.0};
   glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
@@ -213,6 +246,7 @@ int main(int argc, char *argv[]) {
   glPopMatrix();
   glEndList();
 
+  // Event setup
   glutDisplayFunc(display_CB);
   glutTimerFunc(1000 / framerate, timer_CB, 0);
   glutTimerFunc(1000, timer_CB, 1);
