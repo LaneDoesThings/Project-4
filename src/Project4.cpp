@@ -2,7 +2,6 @@
 #include <GL/freeglut.h>
 #include "OpenGL445Setup-aug24.h"
 #include <iostream>
-#include <math.h>
 #include <string>
 
 #define canvas_Width 800
