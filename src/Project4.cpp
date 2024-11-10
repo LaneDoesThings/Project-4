@@ -44,11 +44,11 @@ int countdown = 30;
 bool stop = false;
 int angle = 0;
 
-void drawTime()
-{
-    glColor3f(1.0f,1.0f,1.0f);
-    glRasterPos2i(275, 190);
-    glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *)std::to_string(countdown).c_str());
+void drawTime() {
+  glColor3f(1.0f, 1.0f, 1.0f);
+  glRasterPos2i(275, 190);
+  glutBitmapString(GLUT_BITMAP_8_BY_13,
+                   (const unsigned char *)std::to_string(countdown).c_str());
 }
 
 void drawFish(Fish &fish, Color color, bool tail) {
@@ -75,41 +75,40 @@ void drawFish(Fish &fish, Color color, bool tail) {
   }
 }
 
-void drawFan()
-{
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glPushMatrix();
+void drawFan() {
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glPushMatrix();
 
-    glRotatef(angle, 0.0, 0.0, 1.0);
-    glBegin(GL_TRIANGLES);
-    glVertex3f(0.0, 0.0, -300.0);
-    glVertex3f(-25.0, -12.5, -300.0);
-    glVertex3f(-25.0, 12.5, -300.0);
+  glRotatef(angle, 0.0, 0.0, 1.0);
+  glBegin(GL_TRIANGLES);
+  glVertex3f(0.0, 0.0, -300.0);
+  glVertex3f(50.0 - 5.0, 0.0 + 5.0, -300.0);
+  glVertex3f(25.0 + 5.0, 43.3 - 5.0, -300.0);
 
-    glVertex3f(0.0, 0.0, -300.0);
-    glVertex3f(25.0, 12.5, -300.0);
-    glVertex3f(25.0, -12.5, -300.0);
+  glVertex3f(0.0, 0.0, -300.0);
+  glVertex3f(25.0 - 5.0, 43.3, -300.0);
+  glVertex3f(-25.0 + 5.0, 43.3, -300.0);
 
-    glVertex3f(0.0, 0.0, -300.0);
-    glVertex3f(-14.25, 12.5, 0.0);
-    glVertex3f(-2.25, 12.5, 0.0);
+  glVertex3f(0.0, 0.0, -300.0);
+  glVertex3f(-25.0 - 5.0, 43.3 - 5.0, -300.0);
+  glVertex3f(-50 + 5.0, 0.0 + 5.0, -300.0);
 
-    glVertex3f(0.0, 0.0, -300.0);
-    glVertex3f(2.25, 12.5, 0.0);
-    glVertex3f(14.25, 12.5, 0.0);
+  glVertex3f(0.0, 0.0, -300.0);
+  glVertex3f(-50.0 + 5.0, 0.0 - 5.0, -300.0);
+  glVertex3f(-25.0 - 5.0, -43.3 + 5.0, -300.0);
 
-    glVertex3f(0.0, 0.0, -300.0);
-    glVertex3f(-14.25, -12.5, 0.0);
-    glVertex3f(-2.25, -12.5, 0.0);
+  glVertex3f(0.0, 0.0, -300.0);
+  glVertex3f(-25.0 + 5.0, -43.3, -300.0);
+  glVertex3f(25.0 - 5.0, -43.3, -300.0);
 
-    glVertex3f(0.0, 0.0, -300.0);
-    glVertex3f(2.25, -12.5, 0.0);
-    glVertex3f(14.25, -12.5, 0.0);
-    glEnd();
-    glPopMatrix();
-    glDisable(GL_LIGHTING);
-    glDisable(GL_LIGHT0);
+  glVertex3f(0.0, 0.0, -300.0);
+  glVertex3f(25.0 + 5.0, -43.3 + 5.0, -300.0);
+  glVertex3f(50.0 - 5.0, 0.0 - 5.0, -300.0);
+  glEnd();
+  glDisable(GL_LIGHTING);
+  glDisable(GL_LIGHT0);
+  glPopMatrix();
 }
 
 void display_CB() {
@@ -130,20 +129,19 @@ void timer_CB(int id) {
     glutTimerFunc(1000 / framerate, timer_CB, 0);
     glutPostRedisplay();
   }
-  if(id == 1)
-  {
-    if(countdown == 0)
-    {
-        stop = true;
-        return;
+  if (id == 1) {
+    if (countdown == 0) {
+      stop = true;
+      return;
     }
     countdown--;
     glutTimerFunc(1000, timer_CB, 1);
   }
-  if(id == 2)
-  {
-    angle = (angle + 20) % 360;
-    glutTimerFunc(1000, timer_CB, 2);
+  if (id == 2) {
+    if (!stop) {
+      angle = (angle + 10) % 360;
+      glutTimerFunc(55, timer_CB, 2);
+    }
   }
 }
 
@@ -175,29 +173,28 @@ bool collide(Direction dir) {
 }
 
 void keyboard_CB(unsigned char key, int x, int y) {
-    if(!stop)
-    {
-        if (key == 'h') {
-            if ((fish1.x - fish1.width) - 10.0 > (-tankSize / 2.0f) && !collide(LEFT))
-            fish1.x -= 10.0;
-        } else if (key == 'j') {
-            if ((fish1.x + fish1.width) + 10.0 < (tankSize / 2.0f) && !collide(RIGHT))
-            fish1.x += 10.0;
-        } else if (key == 'u') {
-            if ((fish2.y + fish2.height) + 10.0 < (tankSize / 2.0f) && !collide(UP))
-            fish2.y += 10.0;
-        } else if (key == 'n') {
-            if ((fish2.y - fish2.height) - 10.0 > (-tankSize / 2.0f) && !collide(DOWN))
-            fish2.y -= 10.0;
-        }
+  if (!stop) {
+    if (key == 'h') {
+      if ((fish1.x - fish1.width) - 10.0 > (-tankSize / 2.0f) && !collide(LEFT))
+        fish1.x -= 10.0;
+    } else if (key == 'j') {
+      if ((fish1.x + fish1.width) + 10.0 < (tankSize / 2.0f) && !collide(RIGHT))
+        fish1.x += 10.0;
+    } else if (key == 'u') {
+      if ((fish2.y + fish2.height) + 10.0 < (tankSize / 2.0f) && !collide(UP))
+        fish2.y += 10.0;
+    } else if (key == 'n') {
+      if ((fish2.y - fish2.height) - 10.0 > (-tankSize / 2.0f) && !collide(DOWN))
+        fish2.y -= 10.0;
     }
+  }
 }
 
 int main(int argc, char *argv[]) {
   char canvas_Name[] = "Project 4 - Lane Wright";
   glutInit(&argc, argv);
   my_setup(canvas_Width, canvas_Height, canvas_Name);
-  gluLookAt(00.0, 0.0, 500.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+  gluLookAt(200.0, 0.0, 500.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
   glGenLists(1);
 
   float lightpos[3] = {0.0, 0.0, 0.0};
@@ -207,7 +204,6 @@ int main(int argc, char *argv[]) {
 
   float materialcolor[4] = {1.0, 1.0, 1.0, 1.0};
   glMaterialfv(GL_FRONT, GL_AMBIENT, materialcolor);
-
 
   // Fish Tank
   glNewList(1, GL_COMPILE);
@@ -221,7 +217,7 @@ int main(int argc, char *argv[]) {
   glutDisplayFunc(display_CB);
   glutTimerFunc(1000 / framerate, timer_CB, 0);
   glutTimerFunc(1000, timer_CB, 1);
-  glutTimerFunc(1000, timer_CB, 2);
+  glutTimerFunc(55, timer_CB, 2);
   glutKeyboardFunc(keyboard_CB);
 
   glutMainLoop();
